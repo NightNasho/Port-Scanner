@@ -1,9 +1,18 @@
 """
 PORT SCANNER : DEVELOPED BY NIGHTNASHO
-USAGE : python port_scanner.py --ho <host> -p <port_number> :: Additional Features For -p Option : --pl <port_list>     --pr <port_range>
+USAGE : python port_scanner.py -H <host> -p <port> 
 
 Developed : 2020/05/01 : 6.40pm
-Version : 1.0
+Updated : 2020/06/01 : 1.43pm : ( ChangeLog : [^] Used option -p <port> as a port list and optimized code while checking the arguments ,
+                                              [^] Removed the --pl <port_list> option and --pr <port_range> option,
+                                              [^] Use -H option instead of old --ho <host> option,
+                                              [-] Port range feature removed,
+                                              [+] Code optimised.)
+                                              
+Next Update : (ChangeLog : [+] Using argparse library instead of optparse (due to an out of date in optparse library),
+                           [+] Improving performence using threading library.)
+
+Version : 1.0.1
 
 """
 
@@ -25,43 +34,24 @@ def connectAddr(host, port):
 
 def main():
     parser = optparse.OptionParser("Usage: python port_scanner.py "+\
-    "(--ho <host> [-p <port> --pl <port_list EG:22,23,45,80> --pr <port_range EG:22,23>])")
+    "(-H <host>   -p <port> )")
     
-    parser.add_option('--ho', dest='host', type='string',\
+    parser.add_option('-H', dest='host', type='string',\
     help='Specify host address')
-    parser.add_option('-p', dest='port', type='int',\
+    parser.add_option('-p', dest='port', type='string',\
     help='Specify port number')
-    parser.add_option('--pl', dest='port_list', type='string',\
-    help='Specify port list(type-tuple)')
-    parser.add_option('--pr', dest='port_range', type='string',\
-    help='Specify port range')
     
     (options, args) = parser.parse_args()
-    if (options.host == None) |\
-       ((options.port == None) &\
-        (options.port_list == None) &\
-        (options.port_range == None)):
+    if (options.host == None or options.port == None) :
         print parser.usage
         exit(0)
     else:
         host = options.host
         port = options.port
-        port_list = options.port_list
-        port_range = options.port_range
         
-        if (port):
-            connectAddr(host, port)
-        elif (port_list):
-            port_list = port_list.split(',')
-            for prt in port_list:
+        port = port.split(',')
+        for prt in port:
                 connectAddr(host, int(prt))
-        elif (port_range):
-            port_range = port_range.split(',')
-            if len(port_range) > 2 & len(port_range) < 1:
-                print '[-] Error: Please give Minimum,Maximum range values.'
-                exit(0)
-            for prt in range(int(port_range[0]), int(port_range[1])):
-                connectAddr(host, prt)
         
         
         
